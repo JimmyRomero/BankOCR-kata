@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Class to convert digits to numeric
+ * Class to convert digits to numeric.
  */
 public class ConvertDigitsToNumeric {
 
@@ -14,14 +14,17 @@ public class ConvertDigitsToNumeric {
     private static final String ONE = "     |  |";
     private static final String TWO = " _  _||_ ";
     private static final String THREE = " _  _| _|";
-    private final static String FOUR = "   |_|  |";
-    private final static String FIVE = " _ |_  _|";
-    private final static String SIX = " _ |_ |_|";
-    private final static String SEVEN = " _   |  |";
-    private final static String EIGHT = " _ |_||_|";
-    private final static String NINE = " _ |_| _|";
+    private static final String FOUR = "   |_|  |";
+    private static final String FIVE = " _ |_  _|";
+    private static final String SIX = " _ |_ |_|";
+    private static final String SEVEN = " _   |  |";
+    private static final String EIGHT = " _ |_||_|";
+    private static final String NINE = " _ |_| _|";
 
-    public ConvertDigitsToNumeric(){
+    /**
+     * Constructor method to convert digits to numeric.
+     */
+    public ConvertDigitsToNumeric() {
         digitMappedToNumeric.put(ZERO, "0");
         digitMappedToNumeric.put(ONE, "1");
         digitMappedToNumeric.put(TWO, "2");
@@ -35,12 +38,12 @@ public class ConvertDigitsToNumeric {
     }
 
     /**
-     * Method to convert the digit to numeric
+     * Method to convert the digit to numeric.
      *
      * @param numToConvert The String number to convert.
      * @return The number converted.
      */
-    public String makeNumeric(String numToConvert){
+    public String makeNumeric(final String numToConvert) {
         String num = digitMappedToNumeric.get(numToConvert);
         return num;
     }

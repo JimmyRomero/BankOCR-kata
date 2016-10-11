@@ -1,0 +1,15 @@
+group 'org.fundacionjala.bankOcr'
+    apply plugin: 'java'
+    apply plugin: 'idea'
+    apply plugin: 'checkstyle'
+    checkstyle {
+        toolVersion = "6.1.1"
+    }
+    apply plugin: 'pmd'
+
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        testCompile group: 'junit', name: 'junit', version: '4.12'
+    }

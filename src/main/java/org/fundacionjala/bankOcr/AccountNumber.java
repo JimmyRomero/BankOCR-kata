@@ -1,16 +1,49 @@
-package org.fundacionjala.bankOcr;
+package org.fundacionjala.bankocr;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Class Account number that manages the parse, line of ocr digit, the account number.
  */
-public class AccountNumber {
+class AccountNumber {
 
-    private boolean isValid;
-    private final String textVersion;
-    static final int NUMBER_OF_DIGITS = 9;
-    static final int WIDTH_OF_OCR_NUMERAL = 3;
+    private static final int NUMBER_OF_DIGITS = 9;
+    private static final int WIDTH_OF_OCR_NUMERAL = 3;
+    private static final int FACTOR = 11;
+    private static final Map<String, String> DIGIT_MAPPED_TO_NUMERIC = new HashMap<>();
+    private final String ocrNumberConverted;
+
+    private static final String CHARACTER_NO_LLEGIBLE = "?";
+    private static final String ILL = " ILL";
+    private static final String ERR = " ERR";
+
+    private static final String ZERO = " _ | ||_|";
+    private static final String ONE = "     |  |";
+    private static final String TWO = " _  _||_ ";
+    private static final String THREE = " _  _| _|";
+    private static final String FOUR = "   |_|  |";
+    private static final String FIVE = " _ |_  _|";
+    private static final String SIX = " _ |_ |_|";
+    private static final String SEVEN = " _   |  |";
+    private static final String EIGHT = " _ |_||_|";
+    private static final String NINE = " _ |_| _|";
+
+
+    static {
+        DIGIT_MAPPED_TO_NUMERIC.put(ZERO, "0");
+        DIGIT_MAPPED_TO_NUMERIC.put(ONE, "1");
+        DIGIT_MAPPED_TO_NUMERIC.put(TWO, "2");
+        DIGIT_MAPPED_TO_NUMERIC.put(THREE, "3");
+        DIGIT_MAPPED_TO_NUMERIC.put(FOUR, "4");
+        DIGIT_MAPPED_TO_NUMERIC.put(FIVE, "5");
+        DIGIT_MAPPED_TO_NUMERIC.put(SIX, "6");
+        DIGIT_MAPPED_TO_NUMERIC.put(SEVEN, "7");
+        DIGIT_MAPPED_TO_NUMERIC.put(EIGHT, "8");
+        DIGIT_MAPPED_TO_NUMERIC.put(NINE, "9");
+    }
 
     /**
      * Constructor method of account number.
@@ -18,8 +51,7 @@ public class AccountNumber {
      * @param ocrAccountNumber The OCR account number.
      */
     public AccountNumber(final String ocrAccountNumber) {
-        this.textVersion = createAccountNumberFromOcr(ocrAccountNumber);
-        isValid = checkSum();
+        this.ocrNumberConverted = createAccountNumberFromOcr(ocrAccountNumber);
     }
 
     /**
@@ -27,31 +59,24 @@ public class AccountNumber {
      *
      * @return The checksum calculation.
      */
-    private boolean checkSum() {
+    public boolean isValidCheckSum() {
         int checkSumCalculation = 0;
-        int currentDigit;
-
         for (int digit = 0; digit < NUMBER_OF_DIGITS; digit++) {
-
-            String thisCharacter = textVersion.substring(digit, digit + 1);
-            currentDigit = Integer.parseInt(thisCharacter);
-            checkSumCalculation = checkSumCalculation + ((NUMBER_OF_DIGITS - digit) * currentDigit);
+            String thisCharacter = ocrNumberConverted.substring(digit, digit + 1);
+            checkSumCalculation += (NUMBER_OF_DIGITS - digit) * Integer.parseInt(thisCharacter);
         }
-        final int i = 11;
-        return ((checkSumCalculation % i) == 0);
+        return checkSumCalculation % FACTOR == 0;
     }
 
     /**
      * Method to parse the digit.
      *
-     * @param ocrAccountNumber         The OCR account number.
-     * @param accountNumberAsOcrDigits The account number as digits.
-     * @param digit                    The digit.
+     * @param ocrAccountNumber The OCR account number.
+     * @param digit            The digit.
      * @return The lines of the digit.
      */
-    public static String parseDigit(final String ocrAccountNumber,
-                                    final ArrayList<String> accountNumberAsOcrDigits, final int digit) {
-        int startOfFirstLine = (digit * WIDTH_OF_OCR_NUMERAL);
+    public static String parseDigit(final String ocrAccountNumber, final int digit) {
+        int startOfFirstLine = digit * WIDTH_OF_OCR_NUMERAL;
         int startOfSecondLine = startOfFirstLine + (WIDTH_OF_OCR_NUMERAL * NUMBER_OF_DIGITS);
         int startOfThirdLine = startOfSecondLine + (WIDTH_OF_OCR_NUMERAL * NUMBER_OF_DIGITS);
 
@@ -76,18 +101,18 @@ public class AccountNumber {
     /**
      * Method to create an account number.
      *
-     * @param accountNumberAsOcrDigits The aacount number as digits.
+     * @param accountNumberAsOcrDigits The account number as digits.
      * @param accountNumberLength      The length of the account number.
-     * @return The aacount number.
+     * @return The account number.
      */
-    private static String createAccountNumber(final ArrayList<String> accountNumberAsOcrDigits,
+    private static String createAccountNumber(final List<String> accountNumberAsOcrDigits,
                                               final int accountNumberLength) {
-        ConvertDigitsToNumeric converter = new ConvertDigitsToNumeric();
-        String accountNumber = "";
+        StringBuilder accountNumber = new StringBuilder();
         for (int digit = 0; digit < accountNumberLength; digit++) {
-            accountNumber = accountNumber + (converter.makeNumeric(accountNumberAsOcrDigits.get(digit)));
+            accountNumber.append(DIGIT_MAPPED_TO_NUMERIC
+                    .get(accountNumberAsOcrDigits.get(digit)));
         }
-        return accountNumber;
+        return accountNumber.toString();
     }
 
     /**
@@ -98,7 +123,7 @@ public class AccountNumber {
      */
     public static String createAccountNumberFromOcr(final String ocrToInterpret) {
 
-        ArrayList<String> accountNumberAsOcrDigits = divideOcrAccountNumberIntoOcrDigits(ocrToInterpret);
+        List<String> accountNumberAsOcrDigits = divideOcrAccountNumberIntoOcrDigits(ocrToInterpret);
         final int accountNumberLength = accountNumberAsOcrDigits.size();
         return createAccountNumber(accountNumberAsOcrDigits, accountNumberLength);
     }
@@ -109,31 +134,22 @@ public class AccountNumber {
      * @param ocrAccountNumber The ocr account number.
      * @return The account number as ocr digits.
      */
-    public static ArrayList<String> divideOcrAccountNumberIntoOcrDigits(final String ocrAccountNumber) {
+    public static List<String> divideOcrAccountNumberIntoOcrDigits(final String ocrAccountNumber) {
 
-        ArrayList<String> accountNumberAsOcrDigits = new ArrayList<String>();
+        List<String> accountNumberAsOcrDigits = new ArrayList<>();
 
         for (int digit = 0; digit < NUMBER_OF_DIGITS; digit++) {
-            accountNumberAsOcrDigits.add(parseDigit(ocrAccountNumber, accountNumberAsOcrDigits, digit));
+            accountNumberAsOcrDigits.add(parseDigit(ocrAccountNumber, digit));
         }
         return accountNumberAsOcrDigits;
     }
 
     /**
-     * Get method to obtain if is valid.
+     * Get method to obtain the ocr number converted.
      *
-     * @return Get is valid.
+     * @return The ocrNumberConverted.
      */
-    boolean getIsValid() {
-        return isValid;
-    }
-
-    /**
-     * Get method to obtain the text version.
-     *
-     * @return The textversion.
-     */
-    String getTextVersion() {
-        return textVersion;
+    String convertOCRcodeToNumber() {
+        return ocrNumberConverted;
     }
 }

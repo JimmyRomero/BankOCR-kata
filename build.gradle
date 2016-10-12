@@ -1,4 +1,4 @@
-group 'org.fundacionjala.bankOcr'
+group 'org.fundacionjala.bankocr'
     apply plugin: 'java'
     apply plugin: 'idea'
     apply plugin: 'checkstyle'

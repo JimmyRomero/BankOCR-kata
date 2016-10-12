@@ -1,7 +1,7 @@
-package org.fundacionjala.bankOcr;
+package org.fundacionjala.bankocr;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Assert;
@@ -13,7 +13,7 @@ import org.junit.Test;
  */
 public class FileNumbersTest {
 
-    private Map<String, String> useCase = new HashMap<String, String>();
+    private Map<String, String> useCase = new HashMap<>();
 
     /**
      * Method to assign the data for perform the test.
@@ -51,7 +51,7 @@ public class FileNumbersTest {
      */
     @Test
     public void testAccountNumberIsArrayOfNineDigits() {
-        ArrayList<String> arrayToCheck = AccountNumber.divideOcrAccountNumberIntoOcrDigits(useCase.get("000000000"));
+        List<String> arrayToCheck = AccountNumber.divideOcrAccountNumberIntoOcrDigits(useCase.get("000000000"));
         final int expected = 9;
         Assert.assertEquals(expected, arrayToCheck.size());
     }
@@ -63,7 +63,7 @@ public class FileNumbersTest {
     public void testCheckSumShowsValidAccountNumberIsValid() {
         final String numberToCheck = "123456789";
         AccountNumber accountNumber = new AccountNumber(useCase.get(numberToCheck));
-        Assert.assertTrue(accountNumber.getIsValid());
+        Assert.assertTrue(accountNumber.isValidCheckSum());
     }
 
     /**
@@ -73,8 +73,7 @@ public class FileNumbersTest {
     public void testCheckSumShowsInvalidAccountNumberIsInvalid() {
         final String numberToCheck = "111111111";
         AccountNumber accountNumber = new AccountNumber(useCase.get(numberToCheck));
-        System.out.println(accountNumber);
-        Assert.assertFalse(accountNumber.getIsValid());
+        Assert.assertFalse(accountNumber.isValidCheckSum());
     }
 
 
@@ -85,6 +84,6 @@ public class FileNumbersTest {
     public void testStick1234567879IsRecognized() {
         String numberToCheck = "123456789";
         AccountNumber accountNumber = new AccountNumber(useCase.get(numberToCheck));
-        Assert.assertEquals(numberToCheck, accountNumber.getTextVersion());
+        Assert.assertEquals(numberToCheck, accountNumber.convertOCRcodeToNumber());
     }
 }

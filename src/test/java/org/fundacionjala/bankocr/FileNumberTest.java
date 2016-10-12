@@ -9,9 +9,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * Class to test the numbers and digits of ocr bank.
+ * Class to test the numbers and digits of ocr Bank.
  */
-public class FileNumbersTest {
+public class FileNumberTest {
 
     private Map<String, String> useCase = new HashMap<>();
 
